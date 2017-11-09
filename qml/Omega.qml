@@ -6,7 +6,6 @@ import Sailfish.Silica 1.0
 import "./utils.js" as Util
 
 MapQuickItem {
-    id: selection
 
     anchorPoint.x: sourceItem.width / 2
     anchorPoint.y: sourceItem.height
@@ -23,7 +22,7 @@ MapQuickItem {
         Image {
             id: image
             smooth: false
-            source: "../icons/omega@2.00.png"
+            source: app.getIcon("omega")
         }
     }
 

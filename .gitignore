@@ -1,0 +1,6 @@
+RPMS
+*.png
+documentation.list
+rpmbuilddir-i386
+rpmbuilddir-arm
+qml/harbour-vaievem-finder.qml

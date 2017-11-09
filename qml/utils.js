@@ -32,6 +32,12 @@ function home() {
     return P.QtPositioning.coordinate(homeLat, homeLng)
 }
 
+var constants = {
+    canvasTileSize: 512,
+    canvasScaleFactor: 0.5,
+    halfZoom: 0.5849625
+}
+
 /*
  * Calculations below between longitude/latitude coordinates,
  * Mercator-projected coordinates and pixel positions on screen

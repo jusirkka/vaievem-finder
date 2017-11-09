@@ -26,7 +26,7 @@ Python {
     property bool ready: false
 
     Component.onCompleted: {
-        addImportPath(Qt.resolvedUrl("../.."));
+        addImportPath(Qt.resolvedUrl(".."));
         importModule("poor", function() {
             // Theme.pixelRatio is relative to the Jolla 1,
             // which is maybe around 1.5 in terms of map scales.

@@ -24,7 +24,7 @@ public:
 
 public:
 
-    using IdVector = QVector<qint64>;
+    using IdList = QList<int>;
     using RoleHash = QHash<int, QByteArray>;
 
     Timetable();
@@ -40,10 +40,10 @@ public:
 
     Q_INVOKABLE void find(const QGeoCoordinate& origin, const QGeoCoordinate& destination);
     Q_INVOKABLE QStringList lines() const;
-    Q_INVOKABLE IdVector stops(const QString& line) const;
+    Q_INVOKABLE QList<int> stops(const QString& line) const;
     Q_INVOKABLE QColor color(const QString& line) const;
-    Q_INVOKABLE QString name(qint64 id) const;
-    Q_INVOKABLE QGeoCoordinate location(qint64 id) const;
+    Q_INVOKABLE QString name(int id) const;
+    Q_INVOKABLE QGeoCoordinate location(int id) const;
 
     ~Timetable();
 
@@ -51,19 +51,19 @@ private:
 
     class Schedule {
     public:
-        qint64 line; // NameMap id
-        qint64 origin; // NameMap id
-        qint64 destination; // NameMap id
+        int line; // NameMap id
+        int origin; // NameMap id
+        int destination; // NameMap id
         qint64 leaving; // msecs since epoch
         qint64 arriving; // msecs since epoch
     };
 
-    using NameMap = QMap<qint64, QString>;
-    using IdHash = QHash<QString, qint64>;
-    using ColorMap = QMap<qint64, QColor>;
-    using IdVectorMap = QMap<qint64, IdVector>;
-    using IdVectorMapIterator = QMapIterator<qint64, IdVector>;
-    using CoordMap = QMap<qint64, QGeoCoordinate>;
+    using NameMap = QMap<int, QString>;
+    using IdHash = QHash<QString, int>;
+    using ColorMap = QMap<int, QColor>;
+    using IdListMap = QMap<int, IdList>;
+    using IdListMapIterator = QMapIterator<int, IdList>;
+    using CoordMap = QMap<int, QGeoCoordinate>;
     using ScheduleVector = QVector<Schedule>;
 
 private:
@@ -71,7 +71,7 @@ private:
     NameMap mLineNames;
     IdHash mLineIds;
     ColorMap mLineColors;
-    IdVectorMap mStops;
+    IdListMap mStops;
     NameMap mStopNames;
     CoordMap mStopLocations;
     ScheduleVector mSchedules;

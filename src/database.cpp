@@ -12,6 +12,7 @@ Database::Database() {
     m_DB = QSqlDatabase::addDatabase("QSQLITE");
     QStringList locs = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
     for (QString loc: locs) {
+        qDebug() << loc;
         QString timetable = QString("%1/timetable.db").arg(loc);
         if (QFileInfo(timetable).isReadable()) {
             m_DB.setDatabaseName(timetable);
@@ -35,7 +36,7 @@ Database* Database::instance() {
 QSqlQuery& Database::exec(const QString& sql) {
     if (!m_DB.isOpen()) m_DB.open();
     m_Query = QSqlQuery(m_DB);
-    // qDebug() << sql;
+    // qDebug() << "exec" << sql;
     m_Query.exec(sql);
     if (m_Query.lastError().isValid()) qWarning() << m_Query.lastError();
     return m_Query;
@@ -45,7 +46,7 @@ QSqlQuery& Database::exec(const QString& sql) {
 QSqlQuery& Database::prepare(const QString& sql) {
     if (!m_DB.isOpen()) m_DB.open();
     m_Query = QSqlQuery(m_DB);
-    // qDebug() << sql;
+    // qDebug() << "prepare" << sql;
     m_Query.prepare(sql);
     if (m_Query.lastError().isValid()) qWarning() << m_Query.lastError();
     return m_Query;

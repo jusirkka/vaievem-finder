@@ -7,22 +7,31 @@ import "./utils.js" as Util
 
 MapQuickItem {
 
-    anchorPoint.x: sourceItem.width / 2
+    id: stop
+
+    anchorPoint.x: 0
     anchorPoint.y: sourceItem.height
     height: sourceItem.height
     width: sourceItem.width
-    visible: false
+    visible: true
     coordinate: Util.home()
+
+    property color bg: "#000000"
 
     sourceItem: Item {
         height: image.height
         width: image.width
 
+        Rectangle {
+            anchors.fill: parent
+            opacity: 0.8
+            color: stop.bg
+        }
 
         Image {
             id: image
             smooth: false
-            source: app.getIcon("alpha")
+            source: app.getIcon("busstop")
         }
     }
 
