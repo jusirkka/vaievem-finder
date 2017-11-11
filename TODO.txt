@@ -1,10 +1,10 @@
-- zoom
-- gps position
-- press & hold: center on position
 - dropdown menu on schedule page -> about, config
 - about page (return to schedule page)
 - config page (return to schedule page): select nearest stop max distance
 - Cover content
+- SchedulePage placeholder
 - check stop location acccuracy
 - import rest of the timetables
+- battery friendly position & accuracy computing strategy
 - add GPL (c) & acknowledgements
+- show about page at first launch

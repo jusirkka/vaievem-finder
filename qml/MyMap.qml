@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtLocation 5.0
+import QtPositioning 5.3
 import Sailfish.Silica 1.0
 
 import "./utils.js" as Util
@@ -24,15 +25,14 @@ Map {
     property var selection: Selection {}
     property var first: Alpha {}
     property var second: Omega {}
+    property var mark: Runner {}
 
+    property real zoomLevelPrev: 14
     property bool halfZoom: false
     property var  tiles: []
     property var  stops: []
     property bool changed: true
-
-    Component.onCompleted: {
-        map.center = Util.home()
-    }
+    property var position: gps.position
 
     MouseArea {
         anchors.fill: parent
@@ -44,6 +44,12 @@ Map {
         }
         onDoubleClicked: {
             app.reset()
+        }
+
+        onPressAndHold: {
+            if (map.mark.visible) {
+                map.center = map.mark.coordinate
+            }
         }
     }
 
@@ -58,34 +64,77 @@ Map {
         }
     }
 
+    Component.onCompleted: {
+        map.center = Util.home()
+    }
+
+    gesture.onPinchFinished: {
+        // Round pinched zoom level to avoid fuzziness.
+        var offset = map.zoomLevel < map.zoomLevelPrev ? -1 : 1;
+        Math.abs(map.zoomLevel - map.zoomLevelPrev) > 0.25 ?
+            map.setZoomLevel(map.zoomLevelPrev + offset) :
+            map.setZoomLevel(map.zoomLevelPrev);
+    }
+
     onCenterChanged: {
         // Ensure that tiles are updated after panning.
         // This gets fired ridiculously often, so keep simple.
         map.changed = true;
     }
 
-    function addStops() {
-        var component, stop;
-        var lines = timetableModel.lines();
+    onPositionChanged: {
+        if (gesture.isPinchActive) return
+        if (!position.verticalAccuracyValid || position.verticalAccuracy > 250) {
+            mark.visible = false
+        } else {
+            mark.visible = true
+            mark.coordinate = position.coordinate
+            // 10 000 km = 90 degrees
+            var pos0 = map.toScreenPosition(position.coordinate)
+            var pos1 = map.toScreenPosition(
+                        QtPositioning.coordinate(
+                            position.coordinate.latitude + 9e-6 * position.verticalAccuracy,
+                            position.coordinate.longitude)
+                        )
+            mark.accuracy = Math.abs(pos1.y - pos0.y)
+        }
+    }
+
+    function setupStops() {
+        clearStops()
+        var component, stop
+        var lines = timetableModel.lines()
         for (var i = 0; i < lines.length; i++) {
-            var stops = timetableModel.stops(lines[i]);
+            var stops = timetableModel.stops(lines[i])
             for (var j = 0; j < stops.length; j++) {
-                component = Qt.createComponent("BusStop.qml");
-                stop = component.createObject(map);
+                component = Qt.createComponent("BusStop.qml")
+                stop = component.createObject(map)
                 stop.coordinate = timetableModel.location(stops[j])
                 stop.bg = timetableModel.color(lines[i])
-                map.stops.push(stop);
-                map.addMapItem(stop);
+                map.stops.push(stop)
+                map.addMapItem(stop)
             }
         }
     }
 
     function clearStops() {
         for (var i = 0; i < map.stops.length; i++) {
-            map.removeMapItem(map.stops[i]);
-            map.stops[i].destroy();
+            map.removeMapItem(map.stops[i])
+            map.stops[i].destroy()
         }
         map.stops = []
+    }
+
+    function setZoomLevel(zoom) {
+        // Set the current zoom level.
+        // Round zoom level so that tiles are displayed pixel for pixel.
+        zoom = map.halfZoom ?
+                    Math.ceil(zoom - Util.constants.halfZoom - 0.01) + Util.constants.halfZoom :
+                    Math.floor(zoom + 0.01);
+        map.demoteTiles();
+        map.zoomLevel = zoom;
+        map.zoomLevelPrev = zoom;
+        map.changed = true;
     }
 
     function getBoundingBox() {
@@ -98,6 +147,17 @@ Map {
     function queueUpdate() {
         // Mark map as changed to trigger an update.
         map.changed = true;
+    }
+
+    function demoteTiles() {
+        // Drop basemap tiles to a lower z-level and remove overlays.
+        for (var i = 0; i < map.tiles.length; i++) {
+            if (map.tiles[i].type === "basemap") {
+                map.tiles[i].z = Math.max(1, map.tiles[i].z - 1);
+            } else {
+                map.tiles[i].z = -1;
+            }
+        }
     }
 
     function renderTile(props) {

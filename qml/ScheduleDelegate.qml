@@ -11,6 +11,7 @@ ListItem {
         y: Theme.paddingMedium
         x: Theme.horizontalPageMargin
         anchors.leftMargin: Theme.horizontalPageMargin
+        anchors.rightMargin: Theme.horizontalPageMargin
 
         spacing: Theme.paddingMedium
 
@@ -35,7 +36,7 @@ ListItem {
             spacing: Theme.paddingSmall
 
             Label {
-                width: lineLabel.width * 3
+                width: lineLabel.width * 2.75
                 color: Theme.highlightColor
                 text: model.origin
                 elide: Text.ElideLeft
@@ -43,7 +44,7 @@ ListItem {
             }
 
             Label {
-                width: lineLabel.width * 3
+                width: lineLabel.width * 2.75
                 color: Theme.highlightColor
                 text: model.destination
                 elide: Text.ElideLeft

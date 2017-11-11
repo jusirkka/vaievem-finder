@@ -26,5 +26,6 @@ DISTFILES += qml/vaievem-finder.qml \
     qml/utils.js \
     qml/MyMap.qml \
     qml/ScheduleDelegate.qml \
-    TODO.txt
+    TODO.txt \
+    qml/Runner.qml
 

@@ -47,6 +47,11 @@ ICONS = data/vaievem-finder-86x86.png \
 	qml/icons/omega-150.png \
 	qml/icons/omega-175.png \
 	qml/icons/omega-200.png \
+	qml/icons/runner-100.png \
+	qml/icons/runner-125.png \
+	qml/icons/runner-150.png \
+	qml/icons/runner-175.png \
+	qml/icons/runner-200.png \
 	qml/icons/second-100.png \
 	qml/icons/second-125.png \
 	qml/icons/second-150.png \
@@ -80,6 +85,7 @@ install: $(ICONS)
 	cp qml/*.js $(DATADIR)/qml
 	mkdir -p $(DATADIR)/qml/icons
 	cp qml/icons/*.png $(DATADIR)/qml/icons
+	cp qml/*.log $(DATADIR)/qml
 
 	@echo "Installing tilesources..."
 	mkdir -p $(DATADIR)/tilesources

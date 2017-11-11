@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import QtPositioning 5.3
 
 ApplicationWindow {
     id: app
@@ -15,6 +16,10 @@ ApplicationWindow {
     property bool running: applicationActive || cover.active
 
     Python {id: py}
+    PositionSource {
+        id: gps
+        // nmeaSource: "nmea.log"
+    }
 
     Component.onCompleted: {
         py.setHandler("queue-update", map.queueUpdate)
@@ -22,6 +27,16 @@ ApplicationWindow {
         py.setHandler("show-tile", map.showTile)
         setPixelRatio()
         cycleButton.clicked.connect(app.cycleState)
+        gps.start()
+    }
+
+    Keys.onPressed: {
+        // Allow zooming with H/J keys on the emulator.
+        if (event.key === Qt.Key_J)  {
+            map.setZoomLevel(map.zoomLevel+1)
+        } else if (event.key === Qt.Key_H) {
+            map.setZoomLevel(map.zoomLevel-1)
+        }
     }
 
     function setPixelRatio() {
@@ -47,7 +62,7 @@ ApplicationWindow {
             timetableModel.find(map.first.coordinate, map.second.coordinate)
             var dialog = pageStack.push(Qt.resolvedUrl("SchedulePage.qml"))
             dialog.accepted.connect(app.reset)
-            dialog.rejected.connect(map.addStops)
+            dialog.rejected.connect(map.setupStops)
         } else if (map.selection.visible) {
             map[states[state]].visible = true
             map[states[state]].coordinate = map.selection.coordinate
@@ -62,11 +77,8 @@ ApplicationWindow {
         map.first.visible = false
         map.second.visible = false
         map.selection.visible = false
-        cycleButton.icon.source = getIcon("first")
+        cycleButton.icon.source = getIcon(states[state])
         map.clearStops()
     }
-
-    onRunningChanged: console.log("running = ", running)
-
 }
 

@@ -189,7 +189,7 @@ void Timetable::find(const QGeoCoordinate& origin, const QGeoCoordinate& destina
             }
         }
     }
-    qDebug() << mStops;
+    // qDebug() << mStops;
 
     if (mStops.isEmpty()) return;
 
@@ -219,7 +219,7 @@ void Timetable::find(const QGeoCoordinate& origin, const QGeoCoordinate& destina
         v.clear();
         ph.clear();
 
-        qDebug() << day << first;
+        // qDebug() << day << first;
         v << day.dayOfWeek();
         v << first;
         for (auto line: mStops.keys()) {
@@ -256,7 +256,7 @@ void Timetable::find(const QGeoCoordinate& origin, const QGeoCoordinate& destina
         first = 0;
 
         hours += (msecs_1 - msecs_0) / (3600 * 1000);
-        qDebug() << "hours" << hours;
+        // qDebug() << "hours" << hours;
     }
 
 

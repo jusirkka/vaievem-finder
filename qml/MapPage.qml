@@ -13,7 +13,6 @@ Page {
     Component.onCompleted: {
         app.cycleButton = cycleButton
         app.map = map
-        console.log("completed")
     }
 
     StateButton {id: cycleButton}
