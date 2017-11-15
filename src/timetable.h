@@ -9,6 +9,10 @@
 class Timetable: public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(float walkingDistance
+               READ walkingDistance
+               WRITE setWalkingDistance
+               NOTIFY walkingDistanceChanged)
 
 public:
 
@@ -18,7 +22,8 @@ public:
         OriginRole,
         DestinationRole,
         LeavingRole,
-        ArrivingRole
+        ArrivingRole,
+        StopsRole
     };
 
 
@@ -45,7 +50,14 @@ public:
     Q_INVOKABLE QString name(int id) const;
     Q_INVOKABLE QGeoCoordinate location(int id) const;
 
+    void setWalkingDistance(float);
+    float walkingDistance() const;
+
     ~Timetable();
+
+signals:
+
+    void walkingDistanceChanged(float);
 
 private:
 
@@ -58,23 +70,32 @@ private:
         qint64 arriving; // msecs since epoch
     };
 
-    using NameMap = QMap<int, QString>;
-    using IdHash = QHash<QString, int>;
-    using ColorMap = QMap<int, QColor>;
-    using IdListMap = QMap<int, IdList>;
-    using IdListMapIterator = QMapIterator<int, IdList>;
-    using CoordMap = QMap<int, QGeoCoordinate>;
+    class StopData {
+    public:
+        QGeoCoordinate coord;
+        QString name;
+    };
+
+    class LineData {
+    public:
+        QString name;
+        QColor color;
+        IdList stops;
+    };
+
+    using StopMap = QMap<int, StopData>;
+    using LineMap = QMap<int, LineData>;
+
     using ScheduleVector = QVector<Schedule>;
+
 
 private:
 
-    NameMap mLineNames;
-    IdHash mLineIds;
-    ColorMap mLineColors;
-    IdListMap mStops;
-    NameMap mStopNames;
-    CoordMap mStopLocations;
+    StopMap mStops;
+    LineMap mLines;
     ScheduleVector mSchedules;
+
+    float mWalkingDist;
 
 };
 

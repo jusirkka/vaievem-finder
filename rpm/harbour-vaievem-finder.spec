@@ -9,7 +9,7 @@
 Name: harbour-vaievem-finder
 
 Summary:    VaieVem@Portimão bus schedule finder
-Version:    0.007
+Version:    0.1
 Release: 67
 Group:      Qt/Qt
 License:    GPLv3

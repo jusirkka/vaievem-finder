@@ -7,6 +7,7 @@ import "./utils.js" as Util
 
 Map {
     id: map
+
     anchors.fill: parent
     minimumZoomLevel: 12
     zoomLevel: 14
@@ -104,16 +105,44 @@ Map {
         clearStops()
         var component, stop
         var lines = timetableModel.lines()
+        var stop_counts = {}
         for (var i = 0; i < lines.length; i++) {
+            // console.log("Linha ", lines[i])
             var stops = timetableModel.stops(lines[i])
             for (var j = 0; j < stops.length; j++) {
+                if (stops[j] in stop_counts) {
+                    stop_counts[stops[j]] += 1;
+                } else {
+                    stop_counts[stops[j]] = 1;
+                }
+                // console.log(timetableModel.name(stops[j]), " count ", stop_counts[stops[j]])
                 component = Qt.createComponent("BusStop.qml")
                 stop = component.createObject(map)
                 stop.coordinate = timetableModel.location(stops[j])
                 stop.bg = timetableModel.color(lines[i])
+                stop.anchorPoint.x = - stop.width * (stop_counts[stops[j]] - 1);
+                stop.name = timetableModel.name(stops[j])
+                stop.seq_num = j + 1
+
                 map.stops.push(stop)
                 map.addMapItem(stop)
             }
+        }
+    }
+
+
+    function setupLine(line, stops) {
+        clearStops()
+        var component, stop
+        for (var j = 0; j < stops.length; j++) {
+            component = Qt.createComponent("BusStop.qml")
+            stop = component.createObject(map)
+            stop.coordinate = timetableModel.location(stops[j])
+            stop.bg = timetableModel.color(line)
+            stop.name = timetableModel.name(stops[j])
+            stop.seq_num = j + 1
+            map.stops.push(stop)
+            map.addMapItem(stop)
         }
     }
 
@@ -212,6 +241,7 @@ Map {
                  Util.constants.canvasScaleFactor],
                 null)
 
+        app.scaleBar.update()
         map.changed = false
     }
 

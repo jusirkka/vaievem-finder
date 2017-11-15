@@ -6,6 +6,7 @@
 #include <QQuickView>
 
 #include "timetable.h"
+#include "unitwrappermodel.h"
 
 
 int main(int argc, char *argv[])
@@ -18,6 +19,8 @@ int main(int argc, char *argv[])
 
     Timetable timetable;
     ctxt->setContextProperty("timetableModel", &timetable);
+    UnitWrapperModel coverModel(&timetable);
+    ctxt->setContextProperty("coverModel", &coverModel);
 
     engine.load("qml/vaievem-finder.qml");
 

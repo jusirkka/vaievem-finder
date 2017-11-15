@@ -4,16 +4,17 @@ import QtPositioning 5.3
 
 ApplicationWindow {
     id: app
-    allowedOrientations: defaultAllowedOrientations
+
     initialPage: Component {MapPage {}}
-    cover: Component {Cover {}}
+    cover: Component {CoverPage {}}
 
     property var map: null
     property var cycleButton: null
+    property var scaleBar: null
     property int pixelRatio: 100
     property var states: ["first", "second", "go"]
     property int state: 0
-    property bool running: applicationActive || cover.active
+    property bool running: applicationActive
 
     Python {id: py}
     PositionSource {
@@ -60,9 +61,8 @@ ApplicationWindow {
         if (state === 2) {
             map.selection.visible = false
             timetableModel.find(map.first.coordinate, map.second.coordinate)
-            var dialog = pageStack.push(Qt.resolvedUrl("SchedulePage.qml"))
-            dialog.accepted.connect(app.reset)
-            dialog.rejected.connect(map.setupStops)
+            pageStack.push(Qt.resolvedUrl("SchedulePage.qml"))
+            map.setupStops()
         } else if (map.selection.visible) {
             map[states[state]].visible = true
             map[states[state]].coordinate = map.selection.coordinate

@@ -6,6 +6,12 @@ ListItem {
     id: scheduleItem
     contentHeight: lineLabel.height + 2 * Theme.paddingMedium
 
+    onClicked: {
+        map.setupLine(model.line, model.stops)
+        pageStack.pop()
+    }
+
+
     Row {
 
         y: Theme.paddingMedium
@@ -17,9 +23,13 @@ ListItem {
 
         Rectangle {
             id: lineLabel
+
             color: model.color
             height: Theme.itemSizeMedium
             width: Theme.itemSizeMedium
+
+            property int remaining: Screen.width - width - 2 * Theme.horizontalPageMargin - 2 * Theme.paddingMedium
+
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
@@ -32,11 +42,10 @@ ListItem {
         Column {
 
             anchors.verticalCenter: lineLabel.verticalCenter
-            anchors.rightMargin: Theme.horizontalPageMargin
             spacing: Theme.paddingSmall
 
             Label {
-                width: lineLabel.width * 2.75
+                width:  lineLabel.remaining * 0.63
                 color: Theme.highlightColor
                 text: model.origin
                 elide: Text.ElideLeft
@@ -44,7 +53,7 @@ ListItem {
             }
 
             Label {
-                width: lineLabel.width * 2.75
+                width:  lineLabel.remaining * 0.63
                 color: Theme.highlightColor
                 text: model.destination
                 elide: Text.ElideLeft
@@ -62,13 +71,14 @@ ListItem {
             Label {
                 text: new Date(model.leaving).toLocaleString(Qt.locale(), "ddd HH:mm")
                 font.pixelSize: Theme.fontSizeMedium
+                width:  lineLabel.remaining * 0.37
             }
 
             Label {
                 text: new Date(model.arriving).toLocaleString(Qt.locale(), "ddd HH:mm")
                 font.pixelSize: Theme.fontSizeMedium
+                width:  lineLabel.remaining * 0.37
             }
         }
-
     }
 }
