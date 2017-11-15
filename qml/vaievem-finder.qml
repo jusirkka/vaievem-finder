@@ -79,6 +79,7 @@ ApplicationWindow {
         map.selection.visible = false
         cycleButton.icon.source = getIcon(states[state])
         map.clearStops()
+        timetableModel.reset()
     }
 }
 

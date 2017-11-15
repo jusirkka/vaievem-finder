@@ -44,6 +44,7 @@ public:
     RoleHash roleNames() const override;
 
     Q_INVOKABLE void find(const QGeoCoordinate& origin, const QGeoCoordinate& destination);
+    Q_INVOKABLE void reset();
     Q_INVOKABLE QStringList lines() const;
     Q_INVOKABLE QList<int> stops(const QString& line) const;
     Q_INVOKABLE QColor color(const QString& line) const;
@@ -94,6 +95,8 @@ private:
     StopMap mStops;
     LineMap mLines;
     ScheduleVector mSchedules;
+    QGeoCoordinate mStart;
+    QGeoCoordinate mEnd;
 
     float mWalkingDist;
 

@@ -13,6 +13,8 @@ Timetable::~Timetable() {}
 
 Timetable::Timetable()
     : QAbstractListModel()
+    , mStart()
+    , mEnd()
     , mWalkingDist(1.0)
 {
     bool ok;
@@ -92,6 +94,11 @@ static float distance(const QGeoCoordinate& p1, const QGeoCoordinate& p2) {
     return k * ::sqrt(dx*dx + dy*dy);
 }
 
+static bool equal(const QGeoCoordinate& p1, const QGeoCoordinate& p2) {
+    if (!p1.isValid() || !p2.isValid()) return false;
+    return distance(p1, p2) < 50;
+}
+
 class Stop {
 public:
     Timetable::IdList lines;
@@ -99,10 +106,20 @@ public:
 };
 
 void Timetable::find(const QGeoCoordinate& origin, const QGeoCoordinate& destination) {
+
+    if (!origin.isValid() || !destination.isValid()) return;
+    if (equal(mStart, origin) && equal(mEnd, destination)) return;
+
+    mStart = origin;
+    mEnd = destination;
+
+    // qDebug() << "Finding" << origin << " -> " << destination;
+
     beginResetModel();
     mLines.clear();
     mStops.clear();
     mSchedules.clear();
+
     QString sql = "select c.line_id, c.stop_id, s.latitude, s.longitude, c.season_id, c.weekday_set_id "
                   "from schedule c "
                   "join stop s "
@@ -365,6 +382,17 @@ void Timetable::find(const QGeoCoordinate& origin, const QGeoCoordinate& destina
     endResetModel();
 }
 
+void Timetable::reset() {
+    beginResetModel();
+    mLines.clear();
+    mStops.clear();
+    mSchedules.clear();
+    mStart = QGeoCoordinate();
+    mEnd = QGeoCoordinate();
+    endResetModel();
+}
+
+
 QStringList Timetable::lines() const {
     QStringList names;
     for (const LineData& d: mLines.values()) {
@@ -405,6 +433,9 @@ QGeoCoordinate Timetable::location(int id) const {
 void Timetable::setWalkingDistance(float wd) {
     if (wd != mWalkingDist && wd >= 1.0 && wd <= 5.0) {
         mWalkingDist = wd;
+        // ensure that schedules are updated
+        mStart = QGeoCoordinate();
+        mEnd = QGeoCoordinate();
         QSettings s(QSettings::IniFormat, QSettings::UserScope, qApp->applicationName(), "settings");
         s.setValue("walking-distance", mWalkingDist);
         emit walkingDistanceChanged(mWalkingDist);
